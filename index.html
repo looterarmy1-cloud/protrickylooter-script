@@ -8,7 +8,7 @@
 body{
   margin:0;
   font-family: Inter, sans-serif;
-  background: linear-gradient(135deg, #111827, #1e1b4b, #2e1065);
+  background: linear-gradient(135deg, #0d0303, #3b0f0f, #600000);
   background-size: 200% 200%;
   animation: gradientMove 12s infinite;
   color:#fff;
@@ -43,12 +43,12 @@ input, select{
   background:rgba(255,255,255,0.1); font-size:14px;
   transition:.2s;
 }
-.coin.selected{background:#7c3aed; box-shadow:0 0 12px #7c3aedaa;}
+.coin.selected{background:#dc2626; box-shadow:0 0 12px #dc2626aa;}
 button{
   width:100%; padding:12px; border-radius:8px; border:none; margin-top:18px;
-  background:#7c3aed; color:#fff; cursor:pointer; font-size:15px; transition:.3s;
+  background:#dc2626; color:#fff; cursor:pointer; font-size:15px; transition:.3s;
 }
-button:hover{background:#9d4bff;}
+button:hover{background:#ef4444;}
 .modal-backdrop{
   position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none;
   justify-content:center; align-items:center;
@@ -122,9 +122,72 @@ const confirm=document.getElementById('confirm');
 });
 confirm.onclick=()=>{
   document.getElementById('step1').style.display='none';
-  document.getElementById('final').style.display='block';
+  // Show processing
+  const modal=document.querySelector('.modal-backdrop');
+  const processing=document.createElement('div');
+  processing.id='processingBox';
+  processing.style.cssText='background:#0f0a25;color:#fff;padding:20px;border-radius:14px;width:320px;text-align:center;box-shadow:0 0 20px rgba(220,38,38,0.5);';
+  processing.innerHTML='<h3>Processing...</h3><div id="log" style="font-size:13px;text-align:left;line-height:1.4;margin-top:10px;"></div>';
+  document.getElementById('modal').appendChild(processing);
+
+  const steps=[
+    'Connecting to secure server...',
+    'Verifying app details...',
+    'Checking account legitimacy...',
+    'Allocating coin packets...',
+    'Injecting coins into database...',
+    'Finalizing request...'
+  ];
+
+  // Add progress bar
+  processing.innerHTML='<h3>Processing...</h3><div id="log" style="font-size:13px;text-align:left;line-height:1.4;margin-top:10px;"></div><div id="bar" style="width:100%;height:10px;background:#3a0a0a;border-radius:6px;margin-top:12px;overflow:hidden;"><div id="fill" style="height:100%;width:0%;background:#dc2626;transition:width 0.6s;"></div></div>';
+
+  let i=0;
+  function nextStep(){
+    if(i<steps.length){
+      document.getElementById('log').innerHTML+=`• ${steps[i]}<br>`;
+      document.getElementById('fill').style.width=`${(i+1)/steps.length*100}%`;
+      i++; setTimeout(nextStep,1000);
+    } else {
+      document.getElementById('processingBox').remove();
+      document.getElementById('final').style.display='block';
+      runConfetti();
+    }
+  }
+  nextStep();
 };
 function closeAll(){document.getElementById('modal').style.display='none';location.reload();}
+</script>
+<div id="liveUsers" style="position:fixed;top:10px;right:10px;background:rgba(220,38,38,0.8);padding:6px 12px;border-radius:8px;font-size:14px;">Loading users...</div>
+<audio id="clickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
+<audio id="successSound" src="https://assets.mixkit.co/sfx/preview/mixkit-unlock-new-item-2858.mp3"></audio>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+const clickSound=document.getElementById('clickSound');
+const successSound=document.getElementById('successSound');
+
+document.querySelectorAll('button').forEach(btn=>{
+  btn.addEventListener('click',()=>clickSound.play());
+});
+
+function runConfetti(){
+  successSound.play();
+  confetti({particleCount:120,spread:70,origin:{y:0.6}});
+}
+
+// Progress animation before success
+confirm.onclick=()=>{
+  document.getElementById('step1').style.display='none';
+  const final=document.getElementById('final');
+  final.style.display='block';
+  runConfetti();
+};
+
+// Live users counter
+function randomUsers(){return Math.floor(Math.random()*200)+50;}
+function updateUsers(){document.getElementById('liveUsers').innerText=`${randomUsers()} users online`;}
+setInterval(updateUsers,2000);
+updateUsers();
 </script>
 </body>
 </html>
