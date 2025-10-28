@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>protrickylooter script</title>
+  <style>
+    :root{ --bg:#0f1724; --card:#0b1220; --accent:#7c3aed; --muted:#9aa4b2; --success:#10b981 }
+    *{box-sizing:border-box}
+    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; margin:0; min-height:100vh; background:linear-gradient(180deg,#071029 0%, #07172a 60%); color:#e6eef6; display:flex; align-items:center; justify-content:center; padding:32px}
+    .container{width:960px; max-width:100%; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); border-radius:16px; padding:28px; box-shadow:0 10px 30px rgba(2,6,23,0.6)}
+    h1{margin:0 0 8px; font-size:22px; letter-spacing:0.4px}
+    p.lead{margin:0 0 18px; color:var(--muted)}
+    .grid{display:grid; grid-template-columns:1fr 320px; gap:20px}
+    .card{background:var(--card); padding:18px; border-radius:12px; border:1px solid rgba(255,255,255,0.02)}
+    label{display:block; font-size:13px; color:var(--muted); margin-bottom:6px}
+    input[type=text], input[type=password], select{width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:inherit}
+    .coins{display:flex; gap:10px; flex-wrap:wrap}
+    .coin{padding:10px 12px; border-radius:10px; cursor:pointer; user-select:none; border:1px solid rgba(255,255,255,0.03)}
+    .coin input{display:none}
+    .coin.selected{background:rgba(124,58,237,0.14); border-color:rgba(124,58,237,0.3); box-shadow:0 6px 18px rgba(124,58,237,0.06)}
+    .actions{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:14px}
+    button{padding:10px 14px; border-radius:10px; border:0; cursor:pointer}
+    .btn-primary{background:var(--accent); color:white}
+    .btn-ghost{background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.02)}
+    .note{font-size:13px; color:var(--muted)}
+    .preview{font-size:13px; color:var(--muted)}
+    .footer{margin-top:14px; display:flex; justify-content:flex-end}
+    /* modal */
+    .modal-backdrop{position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; z-index:60}
+    .modal{width:520px; max-width:96%; background:#071125; border-radius:10px; padding:18px; border:1px solid rgba(255,255,255,0.03)}
+    .modal h3{margin:0 0 6px}
+    .modal p{margin:0 0 12px; color:var(--muted)}
+    .two-col{display:flex; gap:12px}
+    .two-col .col{flex:1}
+    .small{font-size:13px}
+    .success{border-left:4px solid var(--success); padding-left:10px}
+    .linkbtn{display:inline-block; padding:10px 12px; border-radius:8px; text-decoration:none; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.02); color:inherit}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>protrickylooter script</h1>
+    <p class="lead">Simple demo page — enter app credentials, pick coins, then follow the steps in the popups to complete the flow.</p>
+
+    <div class="grid">
+      <div class="card" style="min-height:260px">
+        <form id="mainForm">
+          <label for="appName">App name</label>
+          <input id="appName" name="appName" type="text" placeholder="Enter app name" required />
+
+          <div style="height:12px"></div>
+
+          <label for="appSecret">App secret code</label>
+          <input id="appSecret" name="appSecret" type="password" placeholder="Enter secret code" required />
+
+          <div style="height:12px"></div>
+
+          <label>Select coins to add</label>
+          <div class="coins" role="radiogroup" aria-label="coins">
+            <label class="coin" data-value="500"><input type="radio" name="coins" value="500">500</label>
+            <label class="coin" data-value="1000"><input type="radio" name="coins" value="1000">1000</label>
+            <label class="coin" data-value="2000"><input type="radio" name="coins" value="2000">2000</label>
+            <label class="coin" data-value="5000"><input type="radio" name="coins" value="5000">5000</label>
+          </div>
+
+          <div class="actions">
+            <span class="note">Make sure details are correct.</span>
+            <div>
+              <button type="button" class="btn-ghost" id="resetBtn">Reset</button>
+              <button type="submit" class="btn-primary">Submit</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top:0">Preview & links</h3>
+        <p class="preview">App name: <strong id="previewName">—</strong></p>
+        <p class="preview">Secret: <strong id="previewSecret">—</strong></p>
+        <p class="preview">Coins: <strong id="previewCoins">—</strong></p>
+
+        <hr style="margin:12px 0; opacity:0.06" />
+
+        <label for="telegramLink">Your Telegram channel link (optional)</label>
+        <input id="telegramLink" type="text" value="https://telegram.dog/freegooglegiftcode" />
+
+        <div style="height:10px"></div>
+
+        <label for="youtubeLink">Your YouTube channel link (optional)</label>
+        <input id="youtubeLink" type="text" value="https://youtube.com/c/ProTrickyLooters" />
+
+        <div class="footer">
+          <button id="saveLinks" class="btn-ghost" type="button">Save links</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal: Join/Subscribe step -->
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true">
+    <div class="modal" id="modalStep1">
+      <h3>Before we add coins</h3>
+      <p>Please join/subscribe to the channels below. Add your channel links in the page preview area before proceeding.</p>
+
+      <div class="two-col">
+        <div class="col">
+          <div style="margin-bottom:8px"><strong>Telegram</strong></div>
+          <div id="tgArea">
+            <p class="small" id="tgHint">No Telegram link provided — you'll still be able to simulate joining.</p>
+            <a id="tgOpen" class="linkbtn" target="_blank" rel="noopener" href="#">Open Telegram</a>
+          </div>
+        </div>
+        <div class="col">
+          <div style="margin-bottom:8px"><strong>YouTube</strong></div>
+          <div id="ytArea">
+            <p class="small" id="ytHint">No YouTube link provided — you'll still be able to simulate subscribing.</p>
+            <a id="ytOpen" class="linkbtn" target="_blank" rel="noopener" href="#">Open YouTube</a>
+          </div>
+        </div>
+      </div>
+
+      <div style="height:12px"></div>
+      <div style="display:flex; gap:10px">
+        <label style="align-items:center; display:flex; gap:8px"><input type="checkbox" id="confirmTg"> I joined Telegram</label>
+        <label style="align-items:center; display:flex; gap:8px"><input type="checkbox" id="confirmYt"> I subscribed to YouTube</label>
+      </div>
+
+      <div style="height:12px"></div>
+      <div style="display:flex; justify-content:flex-end; gap:8px">
+        <button class="btn-ghost" id="modalCancel">Cancel</button>
+        <button class="btn-primary" id="modalNext" disabled>Confirm & Continue</button>
+      </div>
+    </div>
+
+    <!-- Final modal -->
+    <div class="modal" id="modalFinal" style="display:none">
+      <h3>Success</h3>
+      <p class="success">Coins added successfully! 🎉</p>
+      <p class="small">Please don't undo any of the steps you completed during this process — otherwise the coins may not be added.</p>
+
+      <div style="height:8px"></div>
+      <div style="display:flex; justify-content:flex-end; gap:8px">
+        <button class="btn-primary" id="finishBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Small interaction JS
+    const coinsEls = document.querySelectorAll('.coin');
+    const previewName = document.getElementById('previewName');
+    const previewSecret = document.getElementById('previewSecret');
+    const previewCoins = document.getElementById('previewCoins');
+    const form = document.getElementById('mainForm');
+    const resetBtn = document.getElementById('resetBtn');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalStep1 = document.getElementById('modalStep1');
+    const modalFinal = document.getElementById('modalFinal');
+    const modalCancel = document.getElementById('modalCancel');
+    const modalNext = document.getElementById('modalNext');
+    const confirmTg = document.getElementById('confirmTg');
+    const confirmYt = document.getElementById('confirmYt');
+    const tgOpen = document.getElementById('tgOpen');
+    const ytOpen = document.getElementById('ytOpen');
+    const tgHint = document.getElementById('tgHint');
+    const ytHint = document.getElementById('ytHint');
+    const telegramLinkInput = document.getElementById('telegramLink');
+    const youtubeLinkInput = document.getElementById('youtubeLink');
+    const saveLinksBtn = document.getElementById('saveLinks');
+    const finishBtn = document.getElementById('finishBtn');
+
+    // coin selection behaviour
+    coinsEls.forEach(el => {
+      el.addEventListener('click', () => {
+        coinsEls.forEach(x => x.classList.remove('selected'));
+        el.classList.add('selected');
+        el.querySelector('input').checked = true;
+        updatePreview();
+      });
+    });
+
+    function updatePreview(){
+      previewName.textContent = document.getElementById('appName').value || '—';
+      const secret = document.getElementById('appSecret').value || '—';
+      previewSecret.textContent = secret === '—' ? '—' : '••••••••';
+      const sel = document.querySelector('.coin.selected');
+      previewCoins.textContent = sel ? sel.getAttribute('data-value') : '—';
+    }
+
+    document.getElementById('appName').addEventListener('input', updatePreview);
+    document.getElementById('appSecret').addEventListener('input', updatePreview);
+
+    resetBtn.addEventListener('click', () => {
+      form.reset();
+      coinsEls.forEach(x => x.classList.remove('selected'));
+      previewName.textContent = '—';
+      previewSecret.textContent = '—';
+      previewCoins.textContent = '—';
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // basic validation
+      const appName = document.getElementById('appName').value.trim();
+      const appSecret = document.getElementById('appSecret').value.trim();
+      const coin = document.querySelector('input[name="coins"]:checked');
+      if(!appName || !appSecret || !coin){
+        alert('Please fill app name, app secret and select coins.');
+        return;
+      }
+
+      // show modal step 1
+      // populate links
+      const tgLink = telegramLinkInput.value.trim();
+      const ytLink = youtubeLinkInput.value.trim();
+      if(tgLink){
+        tgOpen.href = tgLink; tgHint.textContent = 'Click the button to open your Telegram channel.';
+      } else { tgOpen.href = '#'; tgHint.textContent = 'No Telegram link provided. You can still simulate joining.' }
+      if(ytLink){
+        ytOpen.href = ytLink; ytHint.textContent = 'Click the button to open your YouTube channel.';
+      } else { ytOpen.href = '#'; ytHint.textContent = 'No YouTube link provided. You can still simulate subscribing.' }
+
+      // reset checkboxes
+      confirmTg.checked = false; confirmYt.checked = false; modalNext.disabled = true;
+
+      modalBackdrop.style.display = 'flex';
+      modalStep1.style.display = 'block';
+      modalFinal.style.display = 'none';
+    });
+
+    // enable next only when both checked
+    [confirmTg, confirmYt].forEach(ch => ch.addEventListener('change', ()=>{
+      modalNext.disabled = !(confirmTg.checked && confirmYt.checked);
+    }))
+
+    modalCancel.addEventListener('click', ()=>{
+      modalBackdrop.style.display = 'none';
+    });
+
+    modalNext.addEventListener('click', ()=>{
+      // simulate a small processing step then show final
+      modalStep1.style.display = 'none';
+      modalFinal.style.display = 'block';
+    });
+
+    finishBtn.addEventListener('click', ()=>{
+      modalBackdrop.style.display = 'none';
+      alert('Flow complete. (This demo does not actually modify any external account or add real coins.)');
+      // In a real implementation you'd call your server here to perform the coin-add action.
+      form.reset();
+      coinsEls.forEach(x => x.classList.remove('selected'));
+      updatePreview();
+    });
+
+    saveLinksBtn.addEventListener('click', ()=>{
+      alert('Links saved locally in the page. They will be used in the popup when you submit.');
+    });
+
+    // small accessibility: allow selecting coin via keyboard
+    coinsEls.forEach((el,i)=>{
+      el.setAttribute('tabindex','0');
+      el.addEventListener('keydown', e=>{
+        if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+      })
+    });
+
+    // init
+    updatePreview();
+
+  </script>
+</body>
+</html>
