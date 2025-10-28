@@ -1,193 +1,410 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>protrickylooter script</title>
-<style>
-body{
-  margin:0;
-  font-family: Inter, sans-serif;
-  background: linear-gradient(135deg, #0d0303, #3b0f0f, #600000);
-  background-size: 200% 200%;
-  animation: gradientMove 12s infinite;
-  color:#fff;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-}
-@keyframes gradientMove{
-  0%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-  100%{background-position:0% 50%}
-}
-.container{
-  background: rgba(255,255,255,0.07);
-  backdrop-filter: blur(10px);
-  padding:28px;
-  border-radius:16px;
-  width:360px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.6);
-  text-align:center;
-}
-h1{margin:0 0 14px; font-size:22px; font-weight:600;}
-label{display:block; text-align:left; margin:10px 0 6px; font-size:14px;}
-input, select{
-  width:100%; padding:10px; border-radius:8px; border:none;
-  background:rgba(255,255,255,0.12); color:#fff;
-}
-.coins{display:flex; justify-content:space-between; margin-top:10px;}
-.coin{
-  flex:1; margin:0 4px; padding:10px 0; border-radius:10px; cursor:pointer;
-  background:rgba(255,255,255,0.1); font-size:14px;
-  transition:.2s;
-}
-.coin.selected{background:#dc2626; box-shadow:0 0 12px #dc2626aa;}
-button{
-  width:100%; padding:12px; border-radius:8px; border:none; margin-top:18px;
-  background:#dc2626; color:#fff; cursor:pointer; font-size:15px; transition:.3s;
-}
-button:hover{background:#ef4444;}
-.modal-backdrop{
-  position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none;
-  justify-content:center; align-items:center;
-}
-.modal{
-  background:#0f0a25; padding:20px; border-radius:14px; width:320px; text-align:center;
-  box-shadow:0 0 20px rgba(124,58,237,0.5);
-}
-.modal button{margin-top:12px;}
-.checkbox-row{display:flex; flex-direction:column; gap:8px; font-size:14px; text-align:left;}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>protrickylooter script</title>
+  <style>
+    :root{
+      --bg1:#0d0303; --bg2:#3b0f0f; --bg3:#600000;
+      --card: rgba(255,255,255,0.05);
+      --accent: #dc2626;
+      --muted: rgba(255,255,255,0.7);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3));
+      background-size:200% 200%;
+      animation:bgMove 14s ease infinite;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    @keyframes bgMove{
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+
+    .wrap{
+      width:420px;
+      max-width:100%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border-radius:14px;
+      padding:22px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      border:1px solid rgba(255,255,255,0.04);
+    }
+
+    .brand{
+      display:flex; align-items:center; gap:12px; margin-bottom:10px;
+    }
+    .logo{
+      width:48px; height:48px; border-radius:10px; background: linear-gradient(135deg,#4b0000,#8b0b0b);
+      display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px;
+      box-shadow:0 6px 20px rgba(220,38,38,0.12), inset 0 -6px 20px rgba(0,0,0,0.2);
+    }
+    h1{margin:0; font-size:20px; letter-spacing:0.2px}
+    p.lead{margin:6px 0 16px; color:var(--muted); font-size:13px}
+
+    label{display:block; font-size:13px; margin:10px 0 6px; color:var(--muted)}
+    input[type="text"], input[type="password"]{
+      width:100%; padding:10px 12px; border-radius:10px; border:0; outline:none;
+      background: rgba(255,255,255,0.04); color: #fff; font-size:14px;
+    }
+
+    .coins{display:flex; gap:8px; margin-top:10px}
+    .coin{
+      flex:1; padding:10px 8px; border-radius:10px; text-align:center; cursor:pointer;
+      background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.02); user-select:none;
+      transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+      font-weight:600;
+    }
+    .coin:hover{transform:translateY(-4px)}
+    .coin.selected{background:linear-gradient(135deg, rgba(220,38,38,0.16), rgba(255,255,255,0.02)); box-shadow:0 12px 30px rgba(220,38,38,0.12); border-color:rgba(220,38,38,0.4)}
+
+    .actions{display:flex; gap:10px; margin-top:16px; align-items:center}
+    .btn{
+      padding:10px 12px; border-radius:10px; border:0; cursor:pointer; font-weight:600;
+    }
+    .btn.primary{flex:1; background:var(--accent); color:#fff; box-shadow:0 8px 26px rgba(220,38,38,0.14)}
+    .btn.ghost{background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.03)}
+
+    .small{font-size:12px; color:var(--muted); margin-top:8px}
+
+    /* modal */
+    .modal-backdrop{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.6); z-index:999}
+    .modal{width:360px; max-width:94%; background:linear-gradient(180deg,#12040b,#1a0710); padding:18px; border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.03)}
+    .modal h3{margin:0 0 8px; font-size:18px}
+    .modal p{margin:0 0 12px; color:var(--muted)}
+    .linkBtn{display:inline-block;width:100%; text-align:center; padding:10px 12px; margin:6px 0; border-radius:10px; text-decoration:none; color:#fff; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.02); font-weight:600}
+    .checkbox-row{display:flex; flex-direction:column; gap:8px; margin-top:8px; color:var(--muted)}
+    .final-success{ text-align:center }
+
+    /* processing console */
+    #processingBox{background:linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.25)); padding:14px; border-radius:10px; color:#fff; border:1px solid rgba(255,255,255,0.03)}
+    #log{font-size:13px; color:var(--muted); max-height:120px; overflow:auto}
+    #bar{width:100%; height:12px; background:rgba(255,255,255,0.04); border-radius:8px; overflow:hidden; margin-top:10px}
+    #fill{height:100%; width:0%; background:linear-gradient(90deg,#a52020,#ff4b4b); transition:width .6s ease}
+
+    /* live users */
+    #liveUsers{position:fixed; top:12px; right:12px; background:rgba(220,38,38,0.92); padding:8px 12px; border-radius:12px; font-weight:700; box-shadow:0 10px 30px rgba(0,0,0,0.5); z-index:1200}
+
+    @media(max-width:480px){
+      .wrap{width:94%}
+      .modal{width:92%}
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-  <h1>protrickylooter script</h1>
-  <form id="mainForm">
-    <label>App Name</label>
-    <input id="appName" required />
-    <label>App Secret Code</label>
-    <input id="appSecret" type="password" required />
-    <label>Select Coins</label>
-    <div class="coins">
-      <div class="coin" data-value="500">500</div>
-      <div class="coin" data-value="1000">1000</div>
-      <div class="coin" data-value="2000">2000</div>
-      <div class="coin" data-value="5000">5000</div>
+  <div id="liveUsers">Loading users...</div>
+
+  <div class="wrap" role="main" aria-labelledby="title">
+    <div class="brand">
+      <div class="logo">PTL</div>
+      <div>
+        <h1 id="title">protrickylooter script</h1>
+        <div style="font-size:12px;color:rgba(255,255,255,0.75)">Fast • Clean • Premium</div>
+      </div>
     </div>
-    <button type="submit">Add Coins</button>
-  </form>
-</div>
 
-<div class="modal-backdrop" id="modal">
-  <div class="modal" id="step1">
-    <h3>Before Adding Coins</h3>
-    <p>Join our channels to continue:</p>
-    <a href="https://telegram.dog/freegooglegiftcode" target="_blank"><button>Join Telegram</button></a>
-    <a href="https://youtube.com/c/ProTrickyLooters" target="_blank"><button>Subscribe YouTube</button></a>
-    <div class="checkbox-row">
-      <label><input type="checkbox" id="chk1"> I joined Telegram</label>
-      <label><input type="checkbox" id="chk2"> I subscribed YouTube</label>
+    <p class="lead">Enter your app details and select the coins to add. Follow the verification steps to complete.</p>
+
+    <form id="mainForm" autocomplete="off">
+      <label for="appName">App name</label>
+      <input id="appName" type="text" placeholder="Enter app name" required>
+
+      <label for="appSecret">App secret code</label>
+      <input id="appSecret" type="password" placeholder="Enter secret code" required>
+
+      <label>Select coins</label>
+      <div class="coins" role="radiogroup" aria-label="coin options">
+        <div class="coin" tabindex="0" data-value="500">500</div>
+        <div class="coin" tabindex="0" data-value="1000">1000</div>
+        <div class="coin" tabindex="0" data-value="2000">2000</div>
+        <div class="coin" tabindex="0" data-value="5000">5000</div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn ghost" id="resetBtn">Reset</button>
+        <button type="submit" class="btn primary" id="submitBtn">Add Coins</button>
+      </div>
+
+      <div class="small">Note: This page simulates the flow client-side for demo purposes.</div>
+    </form>
+  </div>
+
+  <!-- Modal (verification -> processing -> final) -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true">
+    <div class="modal" id="verifyModal" style="display:block">
+      <h3>Before we add coins</h3>
+      <p>Please join our channels to proceed — links are opened in a new tab.</p>
+
+      <a class="linkBtn" id="tgLink" href="https://telegram.dog/freegooglegiftcode" target="_blank" rel="noopener">Join Telegram</a>
+      <a class="linkBtn" id="ytLink" href="https://youtube.com/c/ProTrickyLooters" target="_blank" rel="noopener">Subscribe on YouTube</a>
+
+      <div class="checkbox-row" style="margin-top:12px">
+        <label><input type="checkbox" id="chkTg"> I joined Telegram</label>
+        <label><input type="checkbox" id="chkYt"> I subscribed to YouTube</label>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:12px">
+        <button class="btn ghost" id="cancelVerify">Cancel</button>
+        <button class="btn primary" id="confirmBtn" disabled>Confirm & Continue</button>
+      </div>
     </div>
-    <button id="confirm" disabled>Continue</button>
+
+    <!-- processing placeholder (created dynamically) -->
+    <!-- final success box -->
+    <div class="modal" id="finalModal" style="display:none; margin-top:12px; text-align:center">
+      <div class="final-success">
+        <h3>Success ✅</h3>
+        <p id="successText">Coins added successfully!</p>
+        <p style="font-size:13px; opacity:0.9">Transaction ID: <strong id="txId">—</strong></p>
+        <p style="font-size:12px; color:var(--muted)">Important: Please don't undo your actions. Refreshing may affect the demo state.</p>
+        <div style="display:flex; gap:8px; margin-top:12px">
+          <button class="btn primary" id="finishBtn">Close</button>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="modal" id="final" style="display:none">
-    <h3>Success ✅</h3>
-    <p>Coins added successfully!</p>
-    <p style="font-size:13px;opacity:.8">Do not undo steps otherwise coins may be removed.</p>
-    <button onclick="closeAll()">Close</button>
-  </div>
-</div>
 
-<script>
-let selectedCoin=null;
-document.querySelectorAll('.coin').forEach(c=>{
-  c.onclick=()=>{
-    document.querySelectorAll('.coin').forEach(x=>x.classList.remove('selected'));
-    c.classList.add('selected');
-    selectedCoin=c.dataset.value;
-  };
-});
-document.getElementById('mainForm').onsubmit=e=>{
-  e.preventDefault();
-  if(!selectedCoin){alert('Select coins first');return;}
-  document.getElementById('modal').style.display='flex';
-};
-const chk1=document.getElementById('chk1');
-const chk2=document.getElementById('chk2');
-const confirm=document.getElementById('confirm');
-[chk1,chk2].forEach(x=>x.onchange=()=>{
-  confirm.disabled=!(chk1.checked && chk2.checked);
-});
-confirm.onclick=()=>{
-  document.getElementById('step1').style.display='none';
-  // Show processing
-  const modal=document.querySelector('.modal-backdrop');
-  const processing=document.createElement('div');
-  processing.id='processingBox';
-  processing.style.cssText='background:#0f0a25;color:#fff;padding:20px;border-radius:14px;width:320px;text-align:center;box-shadow:0 0 20px rgba(220,38,38,0.5);';
-  processing.innerHTML='<h3>Processing...</h3><div id="log" style="font-size:13px;text-align:left;line-height:1.4;margin-top:10px;"></div>';
-  document.getElementById('modal').appendChild(processing);
+  <!-- sounds & confetti -->
+  <audio id="clickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
+  <audio id="successSound" src="https://assets.mixkit.co/sfx/preview/mixkit-unlock-new-item-2858.mp3"></audio>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-  const steps=[
-    'Connecting to secure server...',
-    'Verifying app details...',
-    'Checking account legitimacy...',
-    'Allocating coin packets...',
-    'Injecting coins into database...',
-    'Finalizing request...'
-  ];
+  <script>
+    // --- Elements & setup
+    const coinsEls = Array.from(document.querySelectorAll('.coin'));
+    const appName = document.getElementById('appName');
+    const appSecret = document.getElementById('appSecret');
+    const mainForm = document.getElementById('mainForm');
+    const resetBtn = document.getElementById('resetBtn');
+    const submitBtn = document.getElementById('submitBtn');
 
-  // Add progress bar
-  processing.innerHTML='<h3>Processing...</h3><div id="log" style="font-size:13px;text-align:left;line-height:1.4;margin-top:10px;"></div><div id="bar" style="width:100%;height:10px;background:#3a0a0a;border-radius:6px;margin-top:12px;overflow:hidden;"><div id="fill" style="height:100%;width:0%;background:#dc2626;transition:width 0.6s;"></div></div>';
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const verifyModal = document.getElementById('verifyModal');
+    const confirmBtn = document.getElementById('confirmBtn');
+    const cancelVerify = document.getElementById('cancelVerify');
+    const chkTg = document.getElementById('chkTg');
+    const chkYt = document.getElementById('chkYt');
 
-  let i=0;
-  function nextStep(){
-    if(i<steps.length){
-      document.getElementById('log').innerHTML+=`• ${steps[i]}<br>`;
-      document.getElementById('fill').style.width=`${(i+1)/steps.length*100}%`;
-      i++; setTimeout(nextStep,1000);
-    } else {
-      document.getElementById('processingBox').remove();
-      document.getElementById('final').style.display='block';
-      runConfetti();
+    const finalModal = document.getElementById('finalModal');
+    const finishBtn = document.getElementById('finishBtn');
+    const txIdEl = document.getElementById('txId');
+    const successText = document.getElementById('successText');
+
+    const clickSound = document.getElementById('clickSound');
+    const successSound = document.getElementById('successSound');
+
+    const liveUsers = document.getElementById('liveUsers');
+
+    // simple click sound for buttons
+    document.addEventListener('click', (e) => {
+      // play only for UI buttons (not for every click)
+      const t = e.target;
+      if (t.matches('button, .linkBtn, .coin')) {
+        if (clickSound) {
+          clickSound.currentTime = 0;
+          clickSound.play().catch(()=>{});
+        }
+      }
+    });
+
+    // coin selection
+    let selectedCoin = null;
+    coinsEls.forEach(el => {
+      el.addEventListener('click', () => selectCoin(el));
+      el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectCoin(el); }});
+    });
+    function selectCoin(el){
+      coinsEls.forEach(x => x.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedCoin = el.getAttribute('data-value');
     }
-  }
-  nextStep();
-};
-function closeAll(){document.getElementById('modal').style.display='none';location.reload();}
-</script>
-<div id="liveUsers" style="position:fixed;top:10px;right:10px;background:rgba(220,38,38,0.8);padding:6px 12px;border-radius:8px;font-size:14px;">Loading users...</div>
-<audio id="clickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
-<audio id="successSound" src="https://assets.mixkit.co/sfx/preview/mixkit-unlock-new-item-2858.mp3"></audio>
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<script>
-const clickSound=document.getElementById('clickSound');
-const successSound=document.getElementById('successSound');
 
-document.querySelectorAll('button').forEach(btn=>{
-  btn.addEventListener('click',()=>clickSound.play());
-});
+    resetBtn.addEventListener('click', () => {
+      mainForm.reset();
+      coinsEls.forEach(x => x.classList.remove('selected'));
+      selectedCoin = null;
+    });
 
-function runConfetti(){
-  successSound.play();
-  confetti({particleCount:120,spread:70,origin:{y:0.6}});
-}
+    // live users simulation
+    function randomUsers(){ return Math.floor(Math.random()*300)+30; }
+    function updateUsers(){ liveUsers.innerText = `${randomUsers()} users online`; }
+    setInterval(updateUsers, 2200);
+    updateUsers();
 
-// Progress animation before success
-confirm.onclick=()=>{
-  document.getElementById('step1').style.display='none';
-  const final=document.getElementById('final');
-  final.style.display='block';
-  runConfetti();
-};
+    // modal verification logic
+    function updateConfirmState(){ confirmBtn.disabled = !(chkTg.checked && chkYt.checked); }
+    chkTg.addEventListener('change', updateConfirmState);
+    chkYt.addEventListener('change', updateConfirmState);
 
-// Live users counter
-function randomUsers(){return Math.floor(Math.random()*200)+50;}
-function updateUsers(){document.getElementById('liveUsers').innerText=`${randomUsers()} users online`;}
-setInterval(updateUsers,2000);
-updateUsers();
-</script>
+    cancelVerify.addEventListener('click', () => {
+      closeModal();
+    });
+
+    // form submit shows verification modal
+    mainForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!selectedCoin) { alert('Please select coins to add.'); return; }
+      if (!appName.value.trim() || !appSecret.value.trim()) { alert('Please enter app name and secret.'); return; }
+      showModal();
+    });
+
+    function showModal(){
+      modalBackdrop.style.display = 'flex';
+      verifyModal.style.display = 'block';
+      finalModal.style.display = 'none';
+      // reset verify state
+      chkTg.checked = false; chkYt.checked = false; updateConfirmState();
+    }
+    function closeModal(){
+      modalBackdrop.style.display = 'none';
+      // reset DOM processing boxes if any
+      const pb = document.getElementById('processingBox'); if (pb) pb.remove();
+    }
+
+    // confetti helper
+    function runConfetti(){
+      if (successSound) { successSound.currentTime = 0; successSound.play().catch(()=>{}); }
+      confetti({ particleCount: 140, spread: 70, origin: { y: 0.6 }});
+    }
+
+    // utility: generate fake transaction ID
+    function makeTxId(){
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let s = '';
+      for(let i=0;i<12;i++){ s += chars[Math.floor(Math.random()*chars.length)]; }
+      return s.slice(0,4)+'-'+s.slice(4,8)+'-'+s.slice(8,12);
+    }
+
+    // When confirm pressed -> process steps -> final
+    confirmBtn.addEventListener('click', () => {
+      // hide verify box, show processing console
+      verifyModal.style.display = 'none';
+
+      // create processing box
+      const processing = document.createElement('div');
+      processing.id = 'processingBox';
+      processing.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-weight:700">Processing<span id="dots">.</span></div>
+          <div style="font-size:12px;color:var(--muted)">Please wait</div>
+        </div>
+        <div id="log" style="font-size:13px;color:var(--muted);margin-top:10px;max-height:120px;overflow:auto"></div>
+        <div id="bar"><div id="fill"></div></div>
+        <div id="serverStatus" style="margin-top:10px;font-size:13px;color:var(--muted);display:none"></div>
+      `;
+      // append after verifyModal inside modalBackdrop
+      modalBackdrop.appendChild(processing);
+
+      // processing steps with small delays to look professional
+      const steps = [
+        'Establishing secure connection...',
+        'Verifying application credentials...',
+        'Validating user session...',
+        'Allocating coin packets...',
+        'Injecting coins into wallet...',
+        'Committing transaction...'
+      ];
+
+      let i = 0;
+      const total = steps.length;
+
+      // loading dots animation
+      let dotsInterval = setInterval(()=> {
+        const d = document.getElementById('dots');
+        if (d) d.textContent = '.'.repeat((d.textContent.length % 3) + 1);
+      }, 500);
+
+      // step runner: each step takes between 900ms - 1600ms (randomized slight delay)
+      function runStep(){
+        if (i < steps.length){
+          const log = document.getElementById('log');
+          log.innerHTML += `• ${steps[i]}<br>`;
+          log.scrollTop = log.scrollHeight;
+          const fill = document.getElementById('fill');
+          if (fill) fill.style.width = `${Math.round(((i+1)/total)*100)}%`;
+          i++;
+          // short random delay to feel natural
+          const delay = 900 + Math.floor(Math.random()*800);
+          setTimeout(runStep, delay);
+        } else {
+          // slight pause then show server status & transaction id
+          setTimeout(()=> {
+            const log = document.getElementById('log');
+            log.innerHTML += `• Finalizing...<br>`;
+            log.scrollTop = log.scrollHeight;
+            document.getElementById('fill').style.width = `100%`;
+
+            // show server status block
+            const serverStatus = document.getElementById('serverStatus');
+            serverStatus.style.display = 'block';
+            serverStatus.innerHTML = `
+              <div>Server: <strong style="color:#7fff7f">Online</strong></div>
+              <div>Database: <strong style="color:#7fff7f">Synced</strong></div>
+              <div>Anti-Abuse: <strong style="color:#ffb86b">Monitoring</strong></div>
+              <div style="margin-top:6px">Transaction ID: <strong id="tmpTx">—</strong></div>
+            `;
+
+            // fake delay to "commit"
+            setTimeout(()=> {
+              // display final modal
+              clearInterval(dotsInterval);
+              const tmpTx = document.getElementById('tmpTx');
+              const tx = makeTxId();
+              if (tmpTx) tmpTx.textContent = tx;
+              // remove processing console smoothly and show final
+              const pb = document.getElementById('processingBox');
+              if (pb) pb.remove();
+
+              // set transaction id into final modal and text
+              txIdEl.textContent = tx;
+              successText.textContent = `${selectedCoin} coins were added to the account.`;
+
+              finalModal.style.display = 'block';
+              runConfetti();
+            }, 1200 + Math.floor(Math.random()*1200));
+          }, 700);
+        }
+      }
+
+      // init progress width to a small visible state
+      const fill = document.getElementById('fill');
+      if (fill) fill.style.width = '6%';
+      // start step runner with a short initial delay
+      setTimeout(runStep, 600);
+    });
+
+    // finish: close modal and reset
+    finishBtn.addEventListener('click', () => {
+      closeModal();
+      // reset the form to default state so user can demo again
+      mainForm.reset();
+      coinsEls.forEach(x => x.classList.remove('selected'));
+      selectedCoin = null;
+      // small friendly notification
+      alert('Flow complete (demo). This site simulates the process client-side.');
+    });
+
+    // utility: when backdrop clicked outside modals close only if final shown
+    modalBackdrop.addEventListener('click', (e) => {
+      if (e.target === modalBackdrop) {
+        // permit closing only after final (to avoid interrupting processing)
+        if (finalModal.style.display === 'block') closeModal();
+      }
+    });
+
+    // small accessibility: focus first input
+    appName.focus();
+
+  </script>
 </body>
 </html>
